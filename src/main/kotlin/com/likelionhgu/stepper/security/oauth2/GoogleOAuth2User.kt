@@ -1,5 +1,6 @@
-package com.likelionhgu.stepper.security
+package com.likelionhgu.stepper.security.oauth2
 
+import com.likelionhgu.stepper.security.SecurityException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.oauth2.core.user.OAuth2User
 

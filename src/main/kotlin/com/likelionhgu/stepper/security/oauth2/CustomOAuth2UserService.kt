@@ -1,7 +1,8 @@
-package com.likelionhgu.stepper.security
+package com.likelionhgu.stepper.security.oauth2
 
 import com.likelionhgu.stepper.member.Member
 import com.likelionhgu.stepper.member.MemberRepository
+import com.likelionhgu.stepper.security.SecurityException
 import org.slf4j.LoggerFactory
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest

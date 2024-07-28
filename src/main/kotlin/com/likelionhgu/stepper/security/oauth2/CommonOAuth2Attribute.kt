@@ -1,4 +1,4 @@
-package com.likelionhgu.stepper.security
+package com.likelionhgu.stepper.security.oauth2
 
 import java.io.Serializable
 
