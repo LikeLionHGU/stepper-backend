@@ -32,4 +32,4 @@ server:
         max-age: 3600
 custom:
   host:
-    client: ${CLIENT_HOST:http://localhost:3000}
+    client: ${HOST_CLIENT:http://localhost:3000}
