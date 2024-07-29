@@ -1,0 +1,35 @@
+spring:
+  profiles:
+    include: env
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: email, profile
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      password: ${REDIS_PASSWORD}
+  datasource:
+    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+    url: ${DB_URL:jdbc:h2:mem:testdb}
+    username: ${DB_USER:sa}
+    password: ${DB_PASSWORD:}
+  h2:
+    console:
+      enabled: ${H2_CONSOLE:true} # Set to false in production
+server:
+  servlet:
+    session:
+      cookie:
+        name: JSESSIONID
+        http-only: true
+        same-site: none
+        secure: ${COOKIE_SECURE:false} # Set to true in production
+        max-age: 3600
+custom:
+  host:
+    client: ${HOST_CLIENT:http://localhost:3000}
