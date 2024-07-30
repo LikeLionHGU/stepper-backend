@@ -8,7 +8,7 @@ import java.time.LocalDate
 data class GoalResponseWrapper(
     val goals: List<GoalResponse>
 ) {
-    class GoalResponse(
+    data class GoalResponse(
         val goalId: Long,
         val title: String,
         val status: GoalStatus,
@@ -21,7 +21,19 @@ data class GoalResponseWrapper(
         val endDate: LocalDate?,
 
         val thumbnail: String?,
-    )
+    ) {
+        companion object {
+            fun of(goal: Goal): GoalResponse = GoalResponse(
+                goal.goalId,
+                goal.title,
+                goal.status,
+                goal.streak,
+                goal.startDate,
+                goal.endDate,
+                goal.thumbnail
+            )
+        }
+    }
 
     companion object {
         fun of(goals: List<Goal>): GoalResponseWrapper {

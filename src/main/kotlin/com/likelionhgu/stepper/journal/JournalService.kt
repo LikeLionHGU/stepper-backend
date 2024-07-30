@@ -1,6 +1,7 @@
 package com.likelionhgu.stepper.journal
 
 import com.likelionhgu.stepper.goal.Goal
+import com.likelionhgu.stepper.journal.enums.JournalSortType
 import com.likelionhgu.stepper.journal.request.JournalRequest
 import com.likelionhgu.stepper.member.Member
 import org.springframework.stereotype.Service
@@ -25,5 +26,16 @@ class JournalService(
         ).let(journalRepository::save)
 
         return journal.journalId
+    }
+
+    /**
+     * Retrieve all journals for a goal.
+     *
+     * @param goal The goal for which to retrieve journals.
+     * @param sortType The sorting type of the journals.
+     * @return A list of journals for the goal ordered by the sorting type.
+     */
+    fun journalsOf(goal: Goal, sortType: JournalSortType): List<Journal> {
+        return journalRepository.findAllByGoal(goal, sortType.toSort())
     }
 }
