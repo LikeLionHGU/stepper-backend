@@ -20,9 +20,9 @@ class MemberServiceTest : BehaviorSpec({
             picture = "https://example.com/johndoe.jpg"
         )
         `when`("try to get the member profile by oauth2Id") {
-            val member = memberService.memberInfo(oauth2Id)
-
             then("the member should have the correct information") {
+                val member = memberService.memberInfo(oauth2Id)
+
                 member.oauth2Id shouldBe oauth2Id
                 member.email shouldBe email
             }
