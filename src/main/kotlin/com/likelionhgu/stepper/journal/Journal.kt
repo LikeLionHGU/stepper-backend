@@ -1,5 +1,6 @@
 package com.likelionhgu.stepper.journal
 
+import com.likelionhgu.stepper.common.BaseTime
 import com.likelionhgu.stepper.goal.Goal
 import com.likelionhgu.stepper.member.Member
 import jakarta.persistence.Column
@@ -27,7 +28,7 @@ class Journal(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "goal_id")
     val goal: Goal
-) {
+) : BaseTime() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

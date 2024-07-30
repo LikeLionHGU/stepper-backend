@@ -34,7 +34,8 @@ class GoalController(
         @RequestParam(required = false) sort: GoalSortType = GoalSortType.NEWEST
     ): ResponseEntity<GoalResponseWrapper> {
         val goals = goalService.memberGoals(user.oauth2UserId, sort)
-        val goalResponse = GoalResponseWrapper.of(goals)
-        return ResponseEntity.ok(goalResponse)
+
+        val responseBody = GoalResponseWrapper.of(goals)
+        return ResponseEntity.ok(responseBody)
     }
 }
