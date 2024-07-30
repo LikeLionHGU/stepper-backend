@@ -5,6 +5,7 @@ import com.likelionhgu.stepper.goal.request.GoalRequest
 import com.likelionhgu.stepper.member.Member
 import com.likelionhgu.stepper.member.MemberRepository
 import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.springframework.boot.test.context.SpringBootTest
@@ -30,9 +31,8 @@ class GoalServiceTest(
         val request = GoalRequest(title = goalTitle)
 
         `when`("the goal is created") {
-            val goalId = goalService.createGoal(oauth2UserId, request)
-
             then("the goal should be in the database") {
+                val goalId = goalService.createGoal(oauth2UserId, request)
                 val goal = goalRepository.findById(goalId).getOrNull()
 
                 goal shouldNotBe null
@@ -49,30 +49,33 @@ class GoalServiceTest(
         val goalId2 = goalService.createGoal(oauth2UserId, request2)
 
         `when`("the goals are retrieved with an order of recent") {
-            val goals = goalService.memberGoals(oauth2UserId, GoalSortType.NEWEST)
-
             then("the goals should be sorted by recent") {
+                val goals = goalService.memberGoals(oauth2UserId, GoalSortType.NEWEST)
+
                 goals[0].goalId shouldBe goalId2
                 goals[1].goalId shouldBe goalId1
             }
         }
 
         `when`("the goals are retrieved with an order of ascending") {
-            val goals = goalService.memberGoals(oauth2UserId, GoalSortType.ASC)
-
             then("the goals should be sorted by ascending") {
+                val goals = goalService.memberGoals(oauth2UserId, GoalSortType.ASC)
+
                 goals[0].goalId shouldBe goalId1
                 goals[1].goalId shouldBe goalId2
             }
         }
 
         `when`("the goals are retrieved with an order of descending") {
-            val goals = goalService.memberGoals(oauth2UserId, GoalSortType.DESC)
 
             then("the goals should be sorted by ascending") {
+                val goals = goalService.memberGoals(oauth2UserId, GoalSortType.DESC)
+
                 goals[0].goalId shouldBe goalId2
                 goals[1].goalId shouldBe goalId1
             }
         }
     }
-})
+}) {
+    override fun extensions() = listOf(SpringExtension)
+}

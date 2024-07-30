@@ -40,4 +40,4 @@ out/
 .kotlin
 
 ### Properties ###
-application-env.properties
+*.properties
