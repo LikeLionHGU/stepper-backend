@@ -1,5 +1,6 @@
 package com.likelionhgu.stepper.journal
 
+import com.likelionhgu.stepper.exception.JournalNotFoundException
 import com.likelionhgu.stepper.goal.Goal
 import com.likelionhgu.stepper.goal.GoalService
 import com.likelionhgu.stepper.member.MemberService
@@ -78,13 +79,45 @@ class JournalControllerTest(
             )
         )
 
-        `when`("the member tries to read a list of journal entries") {
+        `when`("the member tries to see a list of journal entries") {
             then("the request should be successful") {
                 mockMvc.get("/v1/goals/1/journals") {
                     with(oauth2Login())
                 }
                     .andDo { print() }
                     .andExpect { status { isOk() } }
+            }
+        }
+    }
+
+    given("a journal entry ID which exists") {
+        every { journalService.journalInfo(any()) } returns Journal("title", "content", mockk(), mockk())
+
+        `when`("a member tries to read a journal entry") {
+            then("the request should be successful") {
+                mockMvc.get("/v1/journals/1") {
+                    with(oauth2Login())
+                }
+                    .andDo { print() }
+                    .andExpect {
+                        status { isOk() }
+                    }
+            }
+        }
+    }
+
+    given("a journal entry ID which does not exists") {
+        every { journalService.journalInfo(any()) } throws JournalNotFoundException()
+
+        `when`("a member tries to read a journal entry") {
+            then("the request should be successful") {
+                mockMvc.get("/v1/journals/1") {
+                    with(oauth2Login())
+                }
+                    .andDo { print() }
+                    .andExpect {
+                        status { isInternalServerError() }
+                    }
             }
         }
     }

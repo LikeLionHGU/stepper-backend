@@ -1,10 +1,12 @@
 package com.likelionhgu.stepper.journal
 
+import com.likelionhgu.stepper.exception.JournalNotFoundException
 import com.likelionhgu.stepper.goal.Goal
 import com.likelionhgu.stepper.journal.enums.JournalSortType
 import com.likelionhgu.stepper.journal.request.JournalRequest
 import com.likelionhgu.stepper.member.Member
 import org.springframework.stereotype.Service
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class JournalService(
@@ -37,5 +39,17 @@ class JournalService(
      */
     fun journalsOf(goal: Goal, sortType: JournalSortType, searchKeyword: String?): List<Journal> {
         return journalRepository.findAllByGoalWithQuery(goal, sortType.toSort(), searchKeyword)
+    }
+
+    /**
+     * Retrieve a journal entry by its ID.
+     *
+     * @param journalId The ID of the journal entry to retrieve.
+     * @return The journal entry with the given ID.
+     * @throws JournalNotFoundException If no journal entry is found with the given ID.
+     */
+    fun journalInfo(journalId: Long): Journal {
+        return journalRepository.findById(journalId).getOrNull()
+            ?: throw JournalNotFoundException("Journal not found with ID: $journalId")
     }
 }
