@@ -1,26 +1,26 @@
 spring:
   profiles:
-    include: env
+    include: local
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET}
+            client-id: # Required
+            client-secret: # Required
             scope: email, profile
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      password: ${REDIS_PASSWORD}
+      host: localhost
+      password:
   datasource:
-    driver-class-name: ${DB_DRIVER:org.h2.Driver}
-    url: ${DB_URL:jdbc:h2:mem:testdb}
-    username: ${DB_USER:sa}
-    password: ${DB_PASSWORD:}
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
   h2:
     console:
-      enabled: ${H2_CONSOLE:true} # Set to false in production
+      enabled: true
 server:
   servlet:
     session:
@@ -28,8 +28,8 @@ server:
         name: JSESSIONID
         http-only: true
         same-site: none
-        secure: ${COOKIE_SECURE:false} # Set to true in production
+        secure: true
         max-age: 3600
 custom:
   host:
-    client: ${HOST_CLIENT:http://localhost:3000}
+    client: http://localhost:3000
