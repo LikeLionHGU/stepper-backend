@@ -1,5 +1,7 @@
 package com.likelionhgu.stepper.goal
 
+import com.likelionhgu.stepper.common.BaseTime
+import com.likelionhgu.stepper.goal.enums.GoalStatus
 import com.likelionhgu.stepper.member.Member
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -15,23 +17,29 @@ import java.time.LocalDate
 class Goal(
 
     @Column
-    val title: String,
+    var title: String,
 
     @Column
-    val startDate: LocalDate? = null,
+    var startDate: LocalDate? = null,
 
     @Column
-    val endDate: LocalDate? = null,
+    var endDate: LocalDate? = null,
 
     @Column
-    val thumbnail: String? = null,
+    var thumbnail: String? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     val member: Member
-) {
+) : BaseTime() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var goalId = 0L
+    val goalId = 0L
+
+    @Column
+    var status = GoalStatus.OPEN
+
+    @Column
+    var streak = 0
 }
