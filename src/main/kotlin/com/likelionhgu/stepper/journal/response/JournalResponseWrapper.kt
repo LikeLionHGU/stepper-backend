@@ -21,7 +21,16 @@ data class JournalResponseWrapper(
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yy.MM.dd", timezone = "Asia/Seoul")
         val createdDate: LocalDate
-    )
+    ) {
+        companion object {
+            fun of(journal: Journal): JournalResponse = JournalResponse(
+                journalId = journal.journalId,
+                title = journal.title,
+                content = journal.content,
+                createdDate = journal.createdDate.toLocalDate()
+            )
+        }
+    }
 
     companion object {
         fun of(goal: Goal, journals: List<Journal>): JournalResponseWrapper {

@@ -52,4 +52,14 @@ class JournalController(
         val responseBody = JournalResponseWrapper.of(goal, journals)
         return ResponseEntity.ok(responseBody)
     }
+
+    @GetMapping("/v1/journals/{journalId}")
+    fun displayJournal(
+        @PathVariable journalId: Long
+    ): ResponseEntity<JournalResponseWrapper.JournalResponse> {
+        val journal = journalService.journalInfo(journalId)
+
+        val responseBody = JournalResponseWrapper.JournalResponse.of(journal)
+        return ResponseEntity.ok(responseBody)
+    }
 }
