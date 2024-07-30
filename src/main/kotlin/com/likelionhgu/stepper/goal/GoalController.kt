@@ -31,7 +31,7 @@ class GoalController(
     @GetMapping("/v1/goals")
     fun displayMyGoals(
         @AuthenticationPrincipal user: CommonOAuth2Attribute,
-        @RequestParam sort: GoalSortType
+        @RequestParam(required = false) sort: GoalSortType = GoalSortType.NEWEST
     ): ResponseEntity<GoalResponseWrapper> {
         val goals = goalService.memberGoals(user.oauth2UserId, sort)
         val goalResponse = GoalResponseWrapper.of(goals)
