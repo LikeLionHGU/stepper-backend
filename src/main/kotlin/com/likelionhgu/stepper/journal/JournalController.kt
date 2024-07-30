@@ -40,10 +40,14 @@ class JournalController(
     @GetMapping("/v1/goals/{goalId}/journals")
     fun displayJournals(
         @PathVariable goalId: String,
-        @RequestParam(required = false) sort: JournalSortType = JournalSortType.NEWEST
+        @RequestParam(required = false) sort: JournalSortType = JournalSortType.NEWEST,
+        @RequestParam(required = false) q: String?
     ): ResponseEntity<JournalResponseWrapper> {
+        // Handle query as null if it is an empty string
+        val searchKeyword = q?.takeIf(String::isNotBlank)
+
         val goal = goalService.goalInfo(goalId)
-        val journals = journalService.journalsOf(goal, sort)
+        val journals = journalService.journalsOf(goal, sort, searchKeyword)
 
         val responseBody = JournalResponseWrapper.of(goal, journals)
         return ResponseEntity.ok(responseBody)

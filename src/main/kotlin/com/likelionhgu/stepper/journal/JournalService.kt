@@ -35,7 +35,7 @@ class JournalService(
      * @param sortType The sorting type of the journals.
      * @return A list of journals for the goal ordered by the sorting type.
      */
-    fun journalsOf(goal: Goal, sortType: JournalSortType): List<Journal> {
-        return journalRepository.findAllByGoal(goal, sortType.toSort())
+    fun journalsOf(goal: Goal, sortType: JournalSortType, searchKeyword: String?): List<Journal> {
+        return journalRepository.findAllByGoalWithQuery(goal, sortType.toSort(), searchKeyword)
     }
 }
