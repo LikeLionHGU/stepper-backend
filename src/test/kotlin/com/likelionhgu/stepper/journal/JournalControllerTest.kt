@@ -63,7 +63,7 @@ class JournalControllerTest(
 
     given("a member who has created a goal and written some journal entries") {
         every { goalService.goalInfo(any()) } returns Goal(title = "title", member = mockk())
-        every { journalService.journalsOf(any(), any()) } returns listOf(
+        every { journalService.journalsOf(any(), any(), any()) } returns listOf(
             Journal(
                 "title1",
                 "content",

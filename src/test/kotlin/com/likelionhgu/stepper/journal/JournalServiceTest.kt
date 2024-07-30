@@ -7,7 +7,6 @@ import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.shouldNotBe
 import io.mockk.every
 import io.mockk.mockk
-import org.springframework.data.domain.Sort
 
 class JournalServiceTest : BehaviorSpec({
     val journalRepository = mockk<JournalRepository>()
@@ -27,7 +26,7 @@ class JournalServiceTest : BehaviorSpec({
     }
 
     given("a member who has written some journal entries") {
-        every { journalRepository.findAllByGoal(any(), any()) } returns listOf(
+        every { journalRepository.findAllByGoalWithQuery(any(), any(), any()) } returns listOf(
             Journal(
                 "title1",
                 "content",
@@ -44,7 +43,7 @@ class JournalServiceTest : BehaviorSpec({
 
         `when`("the member requests to see the journal entries") {
             then("the journal entries should be returned") {
-                val journals = journalService.journalsOf(mockk(), JournalSortType.NEWEST)
+                val journals = journalService.journalsOf(mockk(), JournalSortType.NEWEST, null)
 
                 journals.size shouldNotBe 0
             }
