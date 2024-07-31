@@ -1,9 +1,11 @@
 package com.likelionhgu.stepper.security
 
+import com.likelionhgu.stepper.security.SecurityConfig.ClientProperties
 import com.likelionhgu.stepper.security.oauth2.CommonOAuth2Attribute
 import com.likelionhgu.stepper.security.oauth2.CustomOAuth2UserService
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpHeaders
@@ -23,13 +25,18 @@ import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
+@EnableConfigurationProperties(ClientProperties::class)
 @EnableWebSecurity
 class SecurityConfig(
-    private val oAuth2UserService: CustomOAuth2UserService
+    private val oAuth2UserService: CustomOAuth2UserService,
+    private val clientProperties: ClientProperties,
 ) {
 
-    @Value("\${custom.host.client}")
-    lateinit var clientHost: String
+    @ConfigurationProperties(prefix = "custom.client")
+    data class ClientProperties(
+        val redirectUri: String,
+        val allowedOrigin: List<String>,
+    )
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -62,12 +69,12 @@ class SecurityConfig(
 
     private fun authenticationSuccessHandler(): AuthenticationSuccessHandler {
         logger.info("Authentication has succeeded.")
-        return AuthenticationSuccessHandler { request, response, authentication ->
+        return AuthenticationSuccessHandler { _, response, authentication ->
             val userAttribute = authentication.principal as CommonOAuth2Attribute
             oAuth2UserService.saveUser(userAttribute)
 
-            logger.info("Redirecting to $clientHost")
-            response.sendRedirect("$clientHost/oauth2/redirect")
+            logger.info("Redirecting to ${clientProperties.redirectUri}")
+            response.sendRedirect(clientProperties.redirectUri)
         }
     }
 
@@ -81,7 +88,7 @@ class SecurityConfig(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val config = CorsConfiguration().apply {
-            allowedOrigins = listOf(clientHost)
+            allowedOrigins = clientProperties.allowedOrigin
             allowedMethods = listOf("POST", "GET", "PUT", "DELETE", "OPTIONS")
             allowedHeaders = listOf(HttpHeaders.CONTENT_TYPE, CSRF_HEADER_NAME)
             allowCredentials = true

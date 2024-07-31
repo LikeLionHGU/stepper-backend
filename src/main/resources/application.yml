@@ -31,5 +31,7 @@ server:
         secure: true
         max-age: 3600
 custom:
-  host:
-    client: http://localhost:3000
+  client:
+    redirect-uri: http://localhost:3000/oauth2/redirect
+    allowed-origin:
+      - http://localhost:3000
