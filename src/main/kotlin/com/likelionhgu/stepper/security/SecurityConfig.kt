@@ -56,6 +56,7 @@ class SecurityConfig(
             .headers { headers ->
                 headers.frameOptions { it.sameOrigin() }
             }
+            .cors { it.configurationSource(corsConfigurationSource()) }
             .logout { it.logoutSuccessHandler(HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK)) }
             .exceptionHandling { it.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)) }
             .httpBasic { it.disable() }
@@ -85,8 +86,7 @@ class SecurityConfig(
         }
     }
 
-    @Bean
-    fun corsConfigurationSource(): CorsConfigurationSource {
+    private fun corsConfigurationSource(): CorsConfigurationSource {
         val config = CorsConfiguration().apply {
             allowedOrigins = clientProperties.allowedOrigin
             allowedMethods = listOf("POST", "GET", "PUT", "DELETE", "OPTIONS")

@@ -19,5 +19,7 @@ spring:
     username: sa
     password:
 custom:
-  host:
-    client: localhost
+  client:
+    redirect-uri: http://localhost:3000/oauth2/redirect
+    allowed-origin:
+      - http://localhost:3000
