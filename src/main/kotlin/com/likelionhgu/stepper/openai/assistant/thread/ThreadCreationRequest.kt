@@ -16,7 +16,7 @@ data class ThreadCreationRequest(
 
     companion object {
         private const val DEFAULT_ROLE = "assistant"
-        private const val GOAL_TITLE = "{goalTitle}"
+        private const val GOAL_TITLE = "{goal_title}"
 
         fun withDefault(contents: List<String>, goalTitle: String): ThreadCreationRequest {
             val messages = contents.map { content ->
