@@ -27,7 +27,7 @@ class JournalController(
     @PostMapping("/v1/goals/{goalId}/journals")
     fun writeJournal(
         @AuthenticationPrincipal user: CommonOAuth2Attribute,
-        @PathVariable goalId: String,
+        @PathVariable goalId: Long,
         @Valid @RequestBody journalRequest: JournalRequest
     ): ResponseEntity<Unit> {
         val member = memberService.memberInfo(user.oauth2UserId)
@@ -39,7 +39,7 @@ class JournalController(
 
     @GetMapping("/v1/goals/{goalId}/journals")
     fun displayJournals(
-        @PathVariable goalId: String,
+        @PathVariable goalId: Long,
         @RequestParam(required = false) sort: JournalSortType = JournalSortType.NEWEST,
         @RequestParam(required = false) q: String?
     ): ResponseEntity<JournalResponseWrapper> {

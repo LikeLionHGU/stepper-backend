@@ -6,13 +6,16 @@ spring:
       client:
         registration:
           google:
-            client-id: # Required
-            client-secret: # Required
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: email, profile
   data:
     redis:
       host: localhost
       password:
+  jpa:
+    hibernate:
+      ddl-auto: update
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:testdb
@@ -35,3 +38,8 @@ custom:
     redirect-uri: http://localhost:3000/oauth2/redirect
     allowed-origin:
       - http://localhost:3000
+  openai:
+    api-key: ${OPENAI_API_KEY}
+    assistant:
+      welcome-messages:
+        - Message 1
