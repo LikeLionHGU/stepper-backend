@@ -3,10 +3,10 @@ package com.likelionhgu.stepper.openai.assistant
 import com.likelionhgu.stepper.openai.ModelType
 
 
-data class AssistantProperties(
+class AssistantProperties(
     val welcomeMessages: List<String>,
     val instructions: String,
-    private val model: String
+    model: String
 ) {
     val modelType: ModelType = ModelType.of(model)
 }

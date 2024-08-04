@@ -8,10 +8,10 @@ enum class ModelType(val id: String) {
 
     companion object {
         fun of(model: String): ModelType {
-            require(model.isNotBlank()) { "Model must not be blank" }
-
-            return entries.find { it.id == model }
-                ?: throw ModelNotSupportedException("Model $model is not supported")
+            return entries.find { supportedModel ->
+                val modelId = model.takeIf(String::isNotBlank) ?: GPT_4O_MINI.id
+                supportedModel.id == modelId
+            } ?: throw ModelNotSupportedException("Model $model is not supported")
         }
     }
 }

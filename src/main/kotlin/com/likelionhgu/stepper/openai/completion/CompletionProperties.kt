@@ -4,7 +4,7 @@ import com.likelionhgu.stepper.openai.ModelType
 
 class CompletionProperties(
     val instructions: String,
-    private val model: String
+    model: String
 ) {
 
     val modelType: ModelType = ModelType.of(model)
