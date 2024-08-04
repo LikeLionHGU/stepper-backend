@@ -41,5 +41,7 @@ custom:
   openai:
     api-key: ${OPENAI_API_KEY}
     assistant:
+      model:
+      instructions:
       welcome-messages:
         - Message 1

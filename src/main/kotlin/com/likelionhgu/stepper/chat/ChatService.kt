@@ -2,11 +2,19 @@ package com.likelionhgu.stepper.chat
 
 import com.likelionhgu.stepper.chat.response.ChatHistoryResponse
 import com.likelionhgu.stepper.chat.response.ChatResponse
+import com.likelionhgu.stepper.exception.FailedAssistantException
+import com.likelionhgu.stepper.exception.FailedMessageException
+import com.likelionhgu.stepper.exception.FailedRunException
 import com.likelionhgu.stepper.exception.FailedThreadException
 import com.likelionhgu.stepper.goal.Goal
 import com.likelionhgu.stepper.openai.OpenAiProperties
+import com.likelionhgu.stepper.openai.assistant.AssistantRequest
 import com.likelionhgu.stepper.openai.assistant.AssistantService
+import com.likelionhgu.stepper.openai.assistant.run.RunRequest
 import com.likelionhgu.stepper.openai.assistant.thread.ThreadCreationRequest
+import com.likelionhgu.stepper.websocket.MessagePayload
+import org.slf4j.LoggerFactory
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
 import retrofit2.Call
 import retrofit2.Response
@@ -14,7 +22,8 @@ import retrofit2.Response
 @Service
 class ChatService(
     private val assistantService: AssistantService,
-    private val openAiProperties: OpenAiProperties
+    private val openAiProperties: OpenAiProperties,
+    private val redisTemplate: StringRedisTemplate
 ) {
 
     /**
@@ -32,10 +41,80 @@ class ChatService(
             ?: throw FailedThreadException("Failed to create a thread")
     }
 
+    /**
+     * Retrieve chat history of the given chatId.
+     *
+     * The chat history consists of messages between the user and the assistant.
+     *
+     * @param chatId The chatId to retrieve chat history.
+     * @return The chat history of the given chatId.
+     */
     fun chatHistoryOf(chatId: String): ChatHistoryResponse {
-        return assistantService.messagesOfThread(chatId).resolve()
+        return assistantService.listMessagesOf(chatId).resolve()
             ?.let(ChatHistoryResponse.Companion::of)
             ?: throw FailedThreadException("Failed to get chat history for thread $chatId")
+    }
+
+    fun generateQuestion(chatId: String, message: MessagePayload): MessagePayload {
+        addMessageToThread(chatId, message)
+        runAssistantOn(chatId).also { runId ->
+            waitUntilRunComplete(chatId, runId)
+        }
+        return assistantService.listMessagesOf(chatId).resolve()
+            ?.let(MessagePayload.Companion::of)
+            ?: throw FailedMessageException("Failed to retrieve messages of thread $chatId")
+    }
+
+    private fun addMessageToThread(chatId: String, message: MessagePayload) {
+        logger.info("Adding message to thread $chatId")
+        assistantService.createMessageOf(chatId, message.toMessageRequest()).resolve()
+            ?: throw FailedMessageException("Failed to add message to thread $chatId")
+    }
+
+    private fun runAssistantOn(chatId: String): String {
+        logger.info("Running assistant on thread $chatId")
+        val run = assistantService.createRunOf(chatId, RunRequest(assistant())).resolve()
+            ?: throw FailedRunException("Failed to run assistant on thread $chatId")
+        return run.id
+    }
+
+    private fun waitUntilRunComplete(chatId: String, runId: String) {
+        do {
+            Thread.sleep(1_000)
+            val run = assistantService.retrieveRunOf(chatId, runId).resolve()
+                ?: throw FailedRunException("Failed to retrieve run $runId of thread $chatId")
+        } while (run.status != "completed")
+    }
+
+    private fun assistant(assistantName: String = DEFAULT_ASSISTANT_NAME): String {
+        val assistantKey = ASSISTANT_REDIS_KEY_PREFIX + assistantName
+        return redisTemplate.opsForValue().get(assistantKey)
+            ?: fetchAssistantOf(assistantName)
+            ?: createAssistant(assistantName)
+    }
+
+    private fun fetchAssistantOf(assistantName: String): String? {
+        val res = assistantService.listAssistants().resolve()
+            ?: throw FailedAssistantException("Failed to fetch assistants")
+
+        return res.data.find { it.name == assistantName }?.id
+    }
+
+    private fun createAssistant(assistantName: String): String {
+        with(openAiProperties.assistant) {
+            val requestBody = AssistantRequest(modelType.id, instructions, assistantName)
+            return assistantService.createAssistant(requestBody).resolve()
+                ?.let {
+                    redisTemplate.opsForValue().set(ASSISTANT_REDIS_KEY_PREFIX + assistantName, it.id)
+                    it.id
+                } ?: throw FailedAssistantException("Failed to create assistant")
+        }
+    }
+
+    companion object {
+        private const val ASSISTANT_REDIS_KEY_PREFIX = "openai:assistant:"
+        private const val DEFAULT_ASSISTANT_NAME = "default"
+        private val logger = LoggerFactory.getLogger(ChatService::class.java)
     }
 }
 

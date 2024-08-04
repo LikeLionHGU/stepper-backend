@@ -1,5 +1,7 @@
 package com.likelionhgu.stepper.openai
 
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.Gson
 import com.likelionhgu.stepper.openai.assistant.AssistantService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -38,10 +40,14 @@ class OpenAiConfig(
 
     @Bean
     fun assistantService(assistantClient: OkHttpClient): AssistantService {
+        val snakeCasePolicy = Gson().newBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create()
+
         return Retrofit.Builder()
             .client(assistantClient)
             .baseUrl(OPENAI_BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(snakeCasePolicy))
             .build()
             .create(AssistantService::class.java)
     }
