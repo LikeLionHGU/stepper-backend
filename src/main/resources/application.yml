@@ -40,6 +40,9 @@ custom:
       - http://localhost:3000
   openai:
     api-key: ${OPENAI_API_KEY}
+    completion:
+      model:
+      instructions:
     assistant:
       model:
       instructions:

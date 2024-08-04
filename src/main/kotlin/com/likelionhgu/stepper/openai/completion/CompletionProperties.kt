@@ -1,12 +1,11 @@
-package com.likelionhgu.stepper.openai.assistant
+package com.likelionhgu.stepper.openai.completion
 
 import com.likelionhgu.stepper.openai.ModelType
 
-
-data class AssistantProperties(
-    val welcomeMessages: List<String>,
+class CompletionProperties(
     val instructions: String,
     private val model: String
 ) {
+
     val modelType: ModelType = ModelType.of(model)
 }

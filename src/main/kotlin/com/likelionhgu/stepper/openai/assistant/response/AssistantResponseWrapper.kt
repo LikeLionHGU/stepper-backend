@@ -1,4 +1,4 @@
-package com.likelionhgu.stepper.openai.assistant
+package com.likelionhgu.stepper.openai.assistant.response
 
 data class AssistantResponseWrapper(val data: List<AssistantResponse>) {
     data class AssistantResponse(

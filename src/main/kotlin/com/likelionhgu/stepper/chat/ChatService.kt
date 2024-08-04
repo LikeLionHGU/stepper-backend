@@ -1,17 +1,23 @@
 package com.likelionhgu.stepper.chat
 
-import com.likelionhgu.stepper.chat.response.ChatHistoryResponse
+import com.likelionhgu.stepper.chat.response.ChatHistoryResponseWrapper
+import com.likelionhgu.stepper.chat.response.ChatHistoryResponseWrapper.ChatHistoryResponse
 import com.likelionhgu.stepper.chat.response.ChatResponse
+import com.likelionhgu.stepper.chat.response.ChatSummaryResponse
 import com.likelionhgu.stepper.exception.FailedAssistantException
+import com.likelionhgu.stepper.exception.FailedCompletionException
 import com.likelionhgu.stepper.exception.FailedMessageException
 import com.likelionhgu.stepper.exception.FailedRunException
 import com.likelionhgu.stepper.exception.FailedThreadException
 import com.likelionhgu.stepper.goal.Goal
 import com.likelionhgu.stepper.openai.OpenAiProperties
-import com.likelionhgu.stepper.openai.assistant.AssistantRequest
 import com.likelionhgu.stepper.openai.assistant.AssistantService
+import com.likelionhgu.stepper.openai.assistant.message.MessageResponseWrapper
+import com.likelionhgu.stepper.openai.assistant.request.AssistantRequest
 import com.likelionhgu.stepper.openai.assistant.run.RunRequest
 import com.likelionhgu.stepper.openai.assistant.thread.ThreadCreationRequest
+import com.likelionhgu.stepper.openai.completion.CompletionService
+import com.likelionhgu.stepper.openai.completion.request.CompletionRequest
 import com.likelionhgu.stepper.websocket.MessagePayload
 import org.slf4j.LoggerFactory
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -22,6 +28,7 @@ import retrofit2.Response
 @Service
 class ChatService(
     private val assistantService: AssistantService,
+    private val completionService: CompletionService,
     private val openAiProperties: OpenAiProperties,
     private val redisTemplate: StringRedisTemplate
 ) {
@@ -49,25 +56,24 @@ class ChatService(
      * @param chatId The chatId to retrieve chat history.
      * @return The chat history of the given chatId.
      */
-    fun chatHistoryOf(chatId: String): ChatHistoryResponse {
+    fun chatHistoryOf(chatId: String): MessageResponseWrapper {
         return assistantService.listMessagesOf(chatId).resolve()
-            ?.let(ChatHistoryResponse.Companion::of)
             ?: throw FailedThreadException("Failed to get chat history for thread $chatId")
     }
 
-    fun generateQuestion(chatId: String, message: MessagePayload): MessagePayload {
+    fun generateQuestion(chatId: String, message: MessagePayload): ChatHistoryResponse {
         addMessageToThread(chatId, message)
         runAssistantOn(chatId).also { runId ->
             waitUntilRunComplete(chatId, runId)
         }
         return assistantService.listMessagesOf(chatId).resolve()
-            ?.let(MessagePayload.Companion::of)
+            ?.let(ChatHistoryResponseWrapper.Companion::firstOf)
             ?: throw FailedMessageException("Failed to retrieve messages of thread $chatId")
     }
 
     private fun addMessageToThread(chatId: String, message: MessagePayload) {
         logger.info("Adding message to thread $chatId")
-        assistantService.createMessageOf(chatId, message.toMessageRequest()).resolve()
+        assistantService.createMessageOf(chatId, message.toSimpleMessage()).resolve()
             ?: throw FailedMessageException("Failed to add message to thread $chatId")
     }
 
@@ -108,6 +114,17 @@ class ChatService(
                     redisTemplate.opsForValue().set(ASSISTANT_REDIS_KEY_PREFIX + assistantName, it.id)
                     it.id
                 } ?: throw FailedAssistantException("Failed to create assistant")
+        }
+    }
+
+    fun generateSummaryOf(chatId: String): ChatSummaryResponse {
+        val chatHistory = chatHistoryOf(chatId).toSimpleMessage()
+
+        with(openAiProperties.completion) {
+            val requestBody = CompletionRequest.of(modelType.id, instructions, chatHistory)
+            return completionService.createChatCompletion(requestBody).resolve()
+                ?.let(ChatSummaryResponse.Companion::of)
+                ?: throw FailedCompletionException("Failed to create completion for chat $chatId")
         }
     }
 

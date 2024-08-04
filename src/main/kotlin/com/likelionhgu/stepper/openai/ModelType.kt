@@ -1,4 +1,4 @@
-package com.likelionhgu.stepper.openai.assistant
+package com.likelionhgu.stepper.openai
 
 import com.likelionhgu.stepper.exception.ModelNotSupportedException
 

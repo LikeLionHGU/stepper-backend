@@ -1,7 +1,8 @@
 package com.likelionhgu.stepper.websocket
 
 import com.likelionhgu.stepper.chat.ChatService
-import com.likelionhgu.stepper.chat.response.ChatHistoryResponse
+import com.likelionhgu.stepper.chat.response.ChatHistoryResponseWrapper
+import com.likelionhgu.stepper.chat.response.ChatHistoryResponseWrapper.ChatHistoryResponse
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.handler.annotation.Payload
@@ -23,8 +24,8 @@ class MessageController(
      * @return the chat history of the given chatId
      */
     @SubscribeMapping("/chats/{chatId}/history")
-    fun onSubscribe(@DestinationVariable chatId: String): ChatHistoryResponse {
-        return chatService.chatHistoryOf(chatId)
+    fun onSubscribe(@DestinationVariable chatId: String): ChatHistoryResponseWrapper {
+        return chatService.chatHistoryOf(chatId).let(ChatHistoryResponseWrapper.Companion::of)
     }
 
     /**
@@ -40,7 +41,7 @@ class MessageController(
      */
     @MessageMapping("/chats/{chatId}/messages")
     @SendToUser("/queue/messages")
-    fun onMessage(@DestinationVariable chatId: String, @Payload message: MessagePayload): MessagePayload {
+    fun onMessage(@DestinationVariable chatId: String, @Payload message: MessagePayload): ChatHistoryResponse {
         return chatService.generateQuestion(chatId, message)
     }
 }

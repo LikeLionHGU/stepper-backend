@@ -1,7 +1,8 @@
 package com.likelionhgu.stepper.chat
 
-import com.likelionhgu.stepper.chat.response.ChatHistoryResponse
+import com.likelionhgu.stepper.chat.response.ChatHistoryResponseWrapper
 import com.likelionhgu.stepper.chat.response.ChatResponse
+import com.likelionhgu.stepper.chat.response.ChatSummaryResponse
 import com.likelionhgu.stepper.goal.GoalService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -20,7 +21,12 @@ class ChatController(
     }
 
     @GetMapping("/v1/chats/{chatId}/history")
-    fun getChatHistory(@PathVariable chatId: String): ChatHistoryResponse {
-        return chatService.chatHistoryOf(chatId)
+    fun getChatHistory(@PathVariable chatId: String): ChatHistoryResponseWrapper {
+        return chatService.chatHistoryOf(chatId).let(ChatHistoryResponseWrapper.Companion::of)
+    }
+
+    @PostMapping("/v1/chats/{chatId}/summary")
+    fun getChatSummary(@PathVariable chatId: String): ChatSummaryResponse {
+        return chatService.generateSummaryOf(chatId)
     }
 }
