@@ -4,6 +4,8 @@ import com.likelionhgu.stepper.chat.response.ChatHistoryResponseWrapper
 import com.likelionhgu.stepper.chat.response.ChatResponse
 import com.likelionhgu.stepper.chat.response.ChatSummaryResponse
 import com.likelionhgu.stepper.goal.GoalService
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -14,10 +16,11 @@ class ChatController(
     private val goalService: GoalService,
     private val chatService: ChatService
 ) {
-    @PostMapping("/v1/goals/{goalId}/chat")
-    fun createChat(@PathVariable goalId: Long): ChatResponse {
+    @PostMapping("/v1/goals/{goalId}/chats")
+    fun createChat(@PathVariable goalId: Long): ResponseEntity<ChatResponse> {
         val goal = goalService.goalInfo(goalId)
-        return chatService.initChat(goal)
+        val responseBody = chatService.initChat(goal)
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody)
     }
 
     @GetMapping("/v1/chats/{chatId}/history")
@@ -26,7 +29,8 @@ class ChatController(
     }
 
     @PostMapping("/v1/chats/{chatId}/summary")
-    fun getChatSummary(@PathVariable chatId: String): ChatSummaryResponse {
-        return chatService.generateSummaryOf(chatId)
+    fun getChatSummary(@PathVariable chatId: String): ResponseEntity<ChatSummaryResponse> {
+        val responseBody = chatService.generateSummaryOf(chatId)
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody)
     }
 }
