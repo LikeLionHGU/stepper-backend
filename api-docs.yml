@@ -1,0 +1,468 @@
+openapi: 3.1.0
+info:
+  description: |
+    2024 멋쟁이사자처럼 중앙해커톤 남송리3번지팀 데모 API 명세
+  version: 0.1.0
+  title: stepper
+  contact:
+    name: zionhann
+    email: hanzion1108@gmail.com
+servers:
+  - url: https://api.zionhann.com/stepper
+    description: production
+  - url: http://localhost:8080
+    description: local
+security:
+  - X-CSRF-TOKEN: [ ]
+tags:
+  - name: auth
+    description: 인증
+  - name: goals
+    description: 성장목표
+  - name: journals
+    description: 일지
+  - name: chats
+    description: AI 대화
+paths:
+  # auth
+  /v1/csrf:
+    get:
+      tags:
+        - auth
+      summary: csrf 토큰 발급
+      description: " "
+      operationId: issueCsrfToken
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CsrfToken'
+              examples:
+                CsrfTokenExample:
+                  value:
+                    parameterName: _csrf
+                    token: inU6CJ2UNMf
+                    headerName: X-CSRF-TOKEN
+  /logout:
+    post:
+      tags:
+        - auth
+      summary: 로그아웃
+      description: " "
+      operationId: logout
+      responses:
+        "200":
+          description: OK
+
+  # goals
+  /v1/goals:
+    post:
+      tags:
+        - goals
+      summary: 목표 추가
+      description: 목표를 추가한다.
+      operationId: addGoal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoalRequest'
+            examples:
+              GoalRequestExample:
+                value:
+                  title: 중앙해커톤 대상
+                  startDate: 2024-08-06
+                  endDate: 2024-08-07
+                  thumbnail: https://3-namsong-st.s3.ap-northeast-2.amazonaws.com/goals/b46f73d9-fa83-4331-b37d-996897280aa6.jpeg...
+      responses:
+        "201":
+          description: Created
+    get:
+      tags:
+        - goals
+      summary: 내 목표 목록 조회
+      description: 내 목표 목록을 불러온다.
+      operationId: getGoals
+      parameters:
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum:
+              - NEWEST
+              - ASC
+              - DESC
+          description: |
+            정렬 순서.
+            
+            `NEWEST`: 최신순(기본값, 생성 날짜 기준)
+            
+            `ASC`: 오름차순(이름 기준)
+            
+            `DESC`: 내림차순(이름 기준)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoalResponse'
+              examples:
+                GoalResponseExample:
+                  value:
+                    goals:
+                      - goalId: 1
+                        title: 중앙해커톤 대상
+                        streak: 3
+                        status: OPEN
+                        startDate: 24.08.06
+                        endDate: 24.08.07
+                        thumbnail: https://3-namsong-st.s3.ap-northeast-2.amazonaws.com/goals/b46f73d9-fa83-4331-b37d-996897280aa6.jpeg...
+                      - goalId: 2
+                        title: 5kg 다이어트
+                        streak: 0
+                        status: CLOSED
+
+  # journals
+  /v1/goals/{goalId}/journals:
+    post:
+      tags:
+        - journals
+      summary: 특정 목표의 일지 생성
+      description: " "
+      operationId: addJournal
+      parameters:
+        - name: goalId
+          in: path
+          description: 목표 번호
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JournalRequest'
+            examples:
+              JournalRequestExample:
+                value:
+                  title: 진행상황 공유
+                  content: |
+                    미팅 시간에 돌아가면서 진행상황을 공유했다. 각자의 역할은 존중하면서 하나의 프로덕트를 다같이 만들어간다는 느낌이 들어 기분이 좋았다.
+      responses:
+        "201":
+          description: Created
+    get:
+      tags:
+        - journals
+      summary: 특정 목표의 일지 목록 조회
+      description: " "
+      operationId: getJournalsOfGoal
+      parameters:
+        - name: goalId
+          in: path
+          description: 목표 번호
+          required: true
+          schema:
+            type: number
+        - name: q
+          in: query
+          description: 검색 키워드(제목+내용)
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: |
+            정렬순서
+            
+            `NEWEST`: 최신순(기본값, 작성일 기준)
+            
+            `OLDEST`: 오래된순(작성일 기준)
+          schema:
+            type: string
+            enum:
+              - NEWEST
+              - OLDEST
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  goals:
+                    $ref: '#/components/schemas/GoalResponse'
+                  journals:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/JournalResponse'
+              examples:
+                JournalResponseExample:
+                  value:
+                    goal:
+                      goalId: 1
+                      title: 중앙해커톤 대상
+                      streak: 3
+                      status: OPEN
+                      startDate: 24.08.06
+                      endDate: 24.08.07
+                      thumbnail: https://3-namsong-st.s3.ap-northeast-2.amazonaws.com/goals/b46f73d9-fa83-4331-b37d-996897280aa6.jpeg...
+                    journals:
+                      - journalId: 1
+                        title: 진행상황 공유
+                        createdDate: 24.07.17
+                      #             thumbnail: https://3-namsong-st.s3.ap-northeast-2.amazonaws.com/goals/b46f73d9-fa83-4331-b37d-996897280aa6.jpeg...
+                      - journalId: 2
+                        title: 아이디어 디벨롭
+                        createdDate: 24.07.16
+  /v1/journals/{journalId}:
+    get:
+      tags:
+        - journals
+      summary: 일지 상세정보 조회
+      description: " "
+      operationId: getJournalDetail
+      parameters:
+        - name: journalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 일지 ID
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JournalDetailResponse'
+              examples:
+                JournalDetailResponseExample:
+                  value:
+                    journalId: 1
+                    title: 진행상황 공유
+                    content: |
+                      미팅 시간에 돌아가면서 진행상황을 공유했다. 각자의 역할은 존중하면서 하나의 프로덕트를 다같이 만들어간다는 느낌이 들어 기분이 좋았다.
+                    createdDate: 24.07.17
+
+  # chat
+  /v1/goals/{goalId}/chats:
+    post:
+      tags:
+        - chats
+      summary: 특정 목표에 대해 AI로 일지 작성 채팅방 생성
+      description: " "
+      operationId: initChat
+      parameters:
+        - name: goalId
+          in: path
+          description: 목표 ID
+          required: true
+          schema:
+            type: number
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+              examples:
+                ChatResponseExample:
+                  value:
+                    chatId: thread_StEPpEr
+  /v1/chats/{chatId}/history:
+    get:
+      tags:
+        - chats
+      summary: 특정 채팅방의 대화내역 조회
+      description: " "
+      operationId: getChatMessages
+      parameters:
+        - name: chatId
+          in: path
+          description: 채팅방 ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChatHistoryResponse'
+              examples:
+                ChatHistoryResponseExample:
+                  value:
+                    messages:
+                      - role: CHATBOT
+                        content: "안녕하세요 😊\n저는 당신의 성장 여정을 함께할 AI (챗봇 이름)입니다 :)"
+                      - role: CHATBOT
+                        content: "자신의 생각과 감정을 솔직하게 기록하면서, 매일 조금씩 더 나은 나를 발견해 보세요.\n오늘의 기록이 내일의 당신을 더욱 빛나게 할 거예요.\n자, 이제 시작해 볼까요? 당신의 이야기를 들려주세요!"
+                      - role: CHATBOT
+                        content: "어떤 계기로 ‘중앙해커톤 우승'이라는 목표를 가지게 되었나요?"
+                      - role: USER
+                        content: "한동 멋사에서 아기사자로 활동하는 동안 우승하고 싶어!"
+  /v1/chats/{chatId}/summary:
+    post:
+      tags:
+        - chats
+      summary: 특정 채팅방의 대화 내용 요약 (일지 초안 작성)
+      description: " "
+      operationId: chatSummary
+      parameters:
+        - name: chatId
+          in: path
+          description: 채팅방 ID
+          required: true
+          schema:
+            type: number
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatSummaryResponse'
+              examples:
+                ChatSummaryResponseExample:
+                  value:
+                    content: "중앙해커톤에 참여하면서 '우승'이라는 목표를 세웠다. 활동 기간 동안 우승하고 싶다는 열망이 커졌고, 이를 위해 매주 두 번씩 모여 서비스에 대한 회의를 진행했다. 지속적으로 피드백을 주고받고, AI 챗봇 기능이 정말 중요하다는 이야기를 듣고 반드시 선보여야겠다는 다짐을 했다.\n\nAI 챗봇 기능의 발전을 위해 기능 플로우에 대한 시퀀스 다이어그램을 만들고 순차적으로 구현해 나갔다."
+components:
+  securitySchemes:
+    X-CSRF-TOKEN:
+      type: apiKey
+      in: header
+      name: X-CSRF-TOKEN
+  schemas:
+    GoalRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          description: 목표 이름
+        startDate:
+          type: string
+          description: 목표 시작일
+        endDate:
+          type: string
+          description: 목표 종료일
+        thumbnail:
+          type: string
+          description: 목표 썸네일 이미지
+    GoalResponse:
+      type: object
+      properties:
+        goaldId:
+          type: number
+          descriptiom: 목표 ID
+        title:
+          type: string
+          description: 목표 이름
+        streak:
+          type: number
+          description: 연속작성일수
+        status:
+          type: string
+          enum:
+            - OPEN
+            - CLOSED
+            - OVERDUE
+          description: 목표 상태
+        startDate:
+          type: string
+          description: 목표 시작일
+        endDate:
+          type: string
+          description: 목표 종료일
+        thumbnail:
+          type: string
+          description: 목표 썸네일 이미지
+    JournalRequest:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        title:
+          type: string
+          description: 일지제목
+        content:
+          type: string
+          description: 일지내용
+    JournalResponse:
+      type: object
+      properties:
+        journalId:
+          type: number
+          description: 일지 ID
+        title:
+          type: string
+          description: 일지 제목
+        createdDate:
+          type: string
+          description: 작성일자
+    #         thumbnail:
+    #           type: string
+    #           description: 썸네일 이미지
+    JournalDetailResponse:
+      type: object
+      properties:
+        journalId:
+          type: number
+          description: 일지 ID
+        title:
+          type: string
+          description: 일지 제목
+        content:
+          type: string
+          description: 일지 내용
+        createdDate:
+          type: string
+          description: 작성일
+    CsrfToken:
+      type: object
+      properties:
+        prameterName:
+          type: string
+          description: csrf 파라미터 키값
+        token:
+          type: string
+          description: csrf 토큰
+        headerName:
+          type: string
+          description: csrf 헤더 키값
+    ChatResponse:
+      type: object
+      properties:
+        chatId:
+          type: string
+          description: 채팅방 ID
+    ChatHistoryResponse:
+      type: object
+      properties:
+        role:
+          type: string
+          description: 메시지 주체
+        content:
+          type: string
+          description: 메시지 내용
+    ChatSummaryResponse:
+      type: object
+      properties:
+        content:
+          type: string
+          description: 요약한 내용

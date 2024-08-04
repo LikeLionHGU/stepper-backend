@@ -44,8 +44,8 @@ class GoalService(
      * @return Goal The `Goal` entity corresponding to the provided ID.
      * @throws GoalNotFoundException if no goal is found with the provided ID.
      */
-    fun goalInfo(goalId: String): Goal {
-        return goalRepository.findById(goalId.toLong()).getOrNull()
+    fun goalInfo(goalId: Long): Goal {
+        return goalRepository.findById(goalId).getOrNull()
             ?: throw GoalNotFoundException("The goal with the id \"$goalId\" does not exist")
     }
 }
