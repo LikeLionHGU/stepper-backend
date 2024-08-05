@@ -103,7 +103,12 @@ class ChatService(
         val res = assistantService.listAssistants().resolve()
             ?: throw FailedAssistantException("Failed to fetch assistants")
 
-        return res.data.find { it.name == assistantName }?.id
+        return res.data
+            .find { it.name == assistantName }
+            ?.let { assistant ->
+                redisTemplate.opsForValue().set(ASSISTANT_REDIS_KEY_PREFIX + assistant.name, assistant.id)
+                assistant.id
+            }
     }
 
     private fun createAssistant(assistantName: String): String {
