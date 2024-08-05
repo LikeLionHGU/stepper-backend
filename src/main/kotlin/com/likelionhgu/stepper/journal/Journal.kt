@@ -26,12 +26,18 @@ class Journal(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    val member: Member,
+    val member: Member? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "goal_id")
-    val goal: Goal
+    val goal: Goal? = null
 ) : BaseTime() {
+
+    fun update(targetJournal: Journal) {
+        title = targetJournal.title
+        content = targetJournal.content
+        thumbnail = targetJournal.thumbnail
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

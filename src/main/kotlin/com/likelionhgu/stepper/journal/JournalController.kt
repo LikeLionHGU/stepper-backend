@@ -10,9 +10,11 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -61,5 +63,20 @@ class JournalController(
 
         val responseBody = JournalResponseWrapper.JournalResponse.of(journal)
         return ResponseEntity.ok(responseBody)
+    }
+
+    @PutMapping("/v1/journals/{journalId}")
+    fun updateJournal(
+        @PathVariable journalId: Long,
+        @Valid @RequestBody journalRequest: JournalRequest
+    ) {
+        journalService.updateJournal(journalId, journalRequest)
+    }
+
+    @DeleteMapping("/v1/journals/{journalId}")
+    fun deleteJournal(
+        @PathVariable journalId: Long
+    ) {
+        journalService.deleteJournal(journalId)
     }
 }
