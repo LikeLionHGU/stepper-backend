@@ -298,6 +298,48 @@ paths:
                     content: |
                       미팅 시간에 돌아가면서 진행상황을 공유했다. 각자의 역할은 존중하면서 하나의 프로덕트를 다같이 만들어간다는 느낌이 들어 기분이 좋았다.
                     createdDate: 24.07.17
+    put:
+      tags:
+        - journals
+      summary: 일지 수정
+      description: " "
+      operationId: updateJournal
+      parameters:
+        - name: journalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 일지 ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JournalRequest'
+            examples:
+              JournalUpdateRequestExample:
+                value:
+                  title: 중앙해커톤 대상(수정)
+                  content: 수정할 내용
+                  thumbnail: https://3-namsong-st.s3.ap-northeast-2.amazonaws.com/goals/b46f73d9-fa83-4331-b37d-996897280aa6.jpeg...
+    delete:
+      tags:
+        - journals
+      summary: 일지 삭제
+      description: " "
+      operationId: deleteJournal
+      parameters:
+        - name: journalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 일지 ID
+      responses:
+        "200":
+          description: OK
+
 
   # chat
   /v1/goals/{goalId}/chats:
