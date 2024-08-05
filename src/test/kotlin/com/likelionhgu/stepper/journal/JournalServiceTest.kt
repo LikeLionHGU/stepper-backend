@@ -5,6 +5,7 @@ import com.likelionhgu.stepper.journal.request.JournalRequest
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.spring.SpringExtension
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.every
 import io.mockk.mockk
@@ -70,6 +71,18 @@ class JournalServiceTest : BehaviorSpec({
                 val journal = journalService.journalInfo(0L)
 
                 journal shouldNotBe null
+            }
+        }
+
+        `when`("a member tries to update a journal entry") {
+            then("the journal entry should be updated") {
+                val target = JournalRequest("Updated Title", "Updated Content")
+                journalService.updateJournal(0L, target)
+
+                val result = journalService.journalInfo(0L)
+
+                result.title shouldBe "Updated Title"
+                result.content shouldBe "Updated Content"
             }
         }
     }

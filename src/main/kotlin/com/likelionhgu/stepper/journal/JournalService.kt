@@ -53,4 +53,14 @@ class JournalService(
         return journalRepository.findById(journalId).getOrNull()
             ?: throw JournalNotFoundException("Journal not found with ID: $journalId")
     }
+
+    fun updateJournal(journalId: Long, journalRequest: JournalRequest) {
+        val sourceJournal = journalInfo(journalId)
+        val targetJournal = journalRequest.toEntity()
+        sourceJournal.update(targetJournal)
+    }
+
+    fun deleteJournal(journalId: Long) {
+        journalRepository.deleteById(journalId)
+    }
 }
