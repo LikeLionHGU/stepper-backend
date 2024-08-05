@@ -323,6 +323,9 @@ paths:
                   title: 중앙해커톤 대상(수정)
                   content: 수정할 내용
                   thumbnail: https://3-namsong-st.s3.ap-northeast-2.amazonaws.com/goals/b46f73d9-fa83-4331-b37d-996897280aa6.jpeg...
+      responses:
+        "200":
+          description: OK
     delete:
       tags:
         - journals
