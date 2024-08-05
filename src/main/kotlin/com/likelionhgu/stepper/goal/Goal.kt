@@ -25,7 +25,7 @@ class Goal(
     @Column
     var endDate: LocalDate? = null,
 
-    @Column
+    @Column(length = 512)
     var thumbnail: String? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
