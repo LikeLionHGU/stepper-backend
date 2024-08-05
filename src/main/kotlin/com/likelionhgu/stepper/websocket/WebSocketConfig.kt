@@ -27,6 +27,6 @@ class WebSocketConfig(
     companion object {
         private const val DEFAULT_APP_DESTINATION = "/app"
         private const val DEFAULT_BROKER_DESTINATION = "/queue"
-        private const val ENDPOINT = "/stepper"
+        private const val ENDPOINT = "/chatbot"
     }
 }

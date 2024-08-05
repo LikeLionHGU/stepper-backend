@@ -139,6 +139,20 @@ paths:
           schema:
             type: string
           description: 목표 ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoalUpdateRequest'
+            examples:
+              GoalUpdateRequestExample:
+                value:
+                  title: 중앙해커톤 대상
+                  startDate: 2024-08-06
+                  endDate: 2024-08-07
+                  thumbnail: https://3-namsong-st.s3.ap-northeast-2.amazonaws.com/goals/b46f73d9-fa83-4331-b37d-996897280aa6.jpeg...
+                  status: CLOSED
       responses:
         "200":
           description: OK
@@ -398,6 +412,28 @@ components:
         thumbnail:
           type: string
           description: 목표 썸네일 이미지
+    GoalUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: 목표 이름
+        startDate:
+          type: string
+          description: 목표 시작일
+        endDate:
+          type: string
+          description: 목표 종료일
+        thumbnail:
+          type: string
+          description: 썸네일 이미지 URL
+        status:
+          type: string
+          enum:
+            - OPEN
+            - CLOSED
+            - OVERDUE
+          description: 목표 상태
     GoalResponse:
       type: object
       properties:
