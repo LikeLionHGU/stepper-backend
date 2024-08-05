@@ -9,6 +9,7 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -46,8 +47,14 @@ class GoalController(
     fun updateGoal(
         @PathVariable goalId: Long,
         @RequestBody goalRequest: GoalUpdateRequest,
-    ): ResponseEntity<Unit> {
+    ) {
         goalService.updateGoal(goalId, goalRequest)
-        return ResponseEntity.ok().build()
+    }
+
+    @DeleteMapping("/v1/goals/{goalId}")
+    fun deleteGoal(
+        @PathVariable goalId: Long
+    ) {
+        goalService.deleteGoal(goalId)
     }
 }

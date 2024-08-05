@@ -125,6 +125,39 @@ paths:
                         title: 5kg 다이어트
                         streak: 0
                         status: CLOSED
+  /v1/goals/{goalId}:
+    put:
+      tags:
+        - goals
+      summary: 목표 수정(달성 상태 변경 포함)
+      description: " "
+      operationId: modifyGoal
+      parameters:
+        - name: goalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 목표 ID
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+        - goals
+      summary: 목표 삭제
+      description: " "
+      operationId: deleteGoal
+      parameters:
+        - name: goalId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 목표 ID
+      responses:
+        "200":
+          description: OK
 
   # journals
   /v1/goals/{goalId}/journals:

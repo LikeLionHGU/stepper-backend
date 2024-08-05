@@ -58,4 +58,8 @@ class GoalService(
 
         goalRequest.toEntity().also(sourceGoal::update)
     }
+
+    fun deleteGoal(goalId: Long) {
+        goalRepository.deleteById(goalId)
+    }
 }

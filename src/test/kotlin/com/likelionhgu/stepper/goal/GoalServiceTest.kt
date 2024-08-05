@@ -90,6 +90,15 @@ class GoalServiceTest(
                 goal.status shouldBe GoalStatus.CLOSED
             }
         }
+
+        `when`("the goal is deleted") {
+            then("the goal should be deleted") {
+                goalService.deleteGoal(goalId1)
+
+                val goal = goalRepository.findById(goalId1).getOrNull()
+                goal shouldBe null
+            }
+        }
     }
 }) {
     override fun extensions() = listOf(SpringExtension)
