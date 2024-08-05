@@ -20,8 +20,8 @@ class JournalRepositoryTest(
     val goal = goalRepository.save(Goal(title = "title", member = member))
 
     given("multiple journal entries") {
-        val j1 = journalRepository.save(Journal("title1", "content", member, goal))
-        val j2 = journalRepository.save(Journal("title2", "content", member, goal))
+        val j1 = journalRepository.save(Journal("title1", "content", member = member, goal = goal))
+        val j2 = journalRepository.save(Journal("title2", "content", member = member, goal = goal))
 
         `when`("the member requests to see the journal entries with default order") {
             then("the journal entries should be returned ordered by created date in descending order") {

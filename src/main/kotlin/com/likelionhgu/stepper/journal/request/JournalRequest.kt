@@ -10,5 +10,7 @@ data class JournalRequest(
     val title: String?,
 
     @field:NotNull(message = "content cannot be null")
-    val content: String?
+    val content: String?,
+
+    val thumbnail: String? = null
 )

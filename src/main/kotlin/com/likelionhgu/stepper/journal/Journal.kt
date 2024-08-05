@@ -21,6 +21,9 @@ class Journal(
     @Column(length = 2048)
     var content: String,
 
+    @Column(length = 512)
+    var thumbnail: String? = null,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     val member: Member,

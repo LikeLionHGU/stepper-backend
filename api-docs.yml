@@ -153,6 +153,7 @@ paths:
                   title: 진행상황 공유
                   content: |
                     미팅 시간에 돌아가면서 진행상황을 공유했다. 각자의 역할은 존중하면서 하나의 프로덕트를 다같이 만들어간다는 느낌이 들어 기분이 좋았다.
+                  thumbnail: https://3-namsong-st.s3.ap-northeast-2.amazonaws.com/goals/b46f73d9-fa83-4331-b37d-996897280aa6.jpeg...
       responses:
         "201":
           description: Created
@@ -216,10 +217,11 @@ paths:
                       - journalId: 1
                         title: 진행상황 공유
                         createdDate: 24.07.17
-                      #             thumbnail: https://3-namsong-st.s3.ap-northeast-2.amazonaws.com/goals/b46f73d9-fa83-4331-b37d-996897280aa6.jpeg...
+                        thumbnail: https://3-namsong-st.s3.ap-northeast-2.amazonaws.com/goals/b46f73d9-fa83-4331-b37d-996897280aa6.jpeg...
                       - journalId: 2
                         title: 아이디어 디벨롭
                         createdDate: 24.07.16
+                        thumbnail: https://3-namsong-st.s3.ap-northeast-2.amazonaws.com/goals/b46f73d9-fa83-4331-b37d-996897280aa6.jpeg...
   /v1/journals/{journalId}:
     get:
       tags:
@@ -366,9 +368,9 @@ components:
     GoalResponse:
       type: object
       properties:
-        goaldId:
+        goalId:
           type: number
-          descriptiom: 목표 ID
+          description: 목표 ID
         title:
           type: string
           description: 목표 이름
@@ -403,6 +405,9 @@ components:
         content:
           type: string
           description: 일지내용
+        thumbnail:
+          type: string
+          description: 썸네일 이미지 URL
     JournalResponse:
       type: object
       properties:
@@ -415,9 +420,9 @@ components:
         createdDate:
           type: string
           description: 작성일자
-    #         thumbnail:
-    #           type: string
-    #           description: 썸네일 이미지
+        thumbnail:
+          type: string
+          description: 썸네일 이미지 URL
     JournalDetailResponse:
       type: object
       properties:
@@ -436,7 +441,7 @@ components:
     CsrfToken:
       type: object
       properties:
-        prameterName:
+        parameterName:
           type: string
           description: csrf 파라미터 키값
         token:

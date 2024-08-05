@@ -23,6 +23,7 @@ class JournalService(
         val journal = Journal(
             title = request.title!!,
             content = request.content.orEmpty(),
+            thumbnail = request.thumbnail,
             member = member,
             goal = goal
         ).let(journalRepository::save)

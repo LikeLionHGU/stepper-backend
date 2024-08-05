@@ -68,14 +68,14 @@ class JournalControllerTest(
             Journal(
                 "title1",
                 "content",
-                mockk(),
-                mockk()
+                member = mockk(),
+                goal = mockk()
             ),
             Journal(
                 "title2",
                 "content",
-                mockk(),
-                mockk()
+                member = mockk(),
+                goal = mockk()
             )
         )
 
@@ -91,7 +91,12 @@ class JournalControllerTest(
     }
 
     given("a journal entry ID which exists") {
-        every { journalService.journalInfo(any()) } returns Journal("title", "content", mockk(), mockk())
+        every { journalService.journalInfo(any()) } returns Journal(
+            "title",
+            "content",
+            member = mockk(),
+            goal = mockk()
+        )
 
         `when`("a member tries to read a journal entry") {
             then("the request should be successful") {
