@@ -15,7 +15,12 @@ class JournalServiceTest : BehaviorSpec({
     val journalService = JournalService(journalRepository)
 
     given("A member who has created a goal") {
-        every { journalRepository.save(any<Journal>()) } returns Journal("title", "content", mockk(), mockk())
+        every { journalRepository.save(any<Journal>()) } returns Journal(
+            "title",
+            "content",
+            member = mockk(),
+            goal = mockk()
+        )
         val request = JournalRequest("title", "content")
 
         `when`("the member writes the journal entry") {
@@ -32,14 +37,14 @@ class JournalServiceTest : BehaviorSpec({
             Journal(
                 "title1",
                 "content",
-                mockk(),
-                mockk()
+                member = mockk(),
+                goal = mockk()
             ),
             Journal(
                 "title2",
                 "content",
-                mockk(),
-                mockk()
+                member = mockk(),
+                goal = mockk()
             )
         )
 
@@ -53,7 +58,12 @@ class JournalServiceTest : BehaviorSpec({
     }
 
     given("a journal entry ID") {
-        every { journalRepository.findById(any()).getOrNull() } returns Journal("title", "content", mockk(), mockk())
+        every { journalRepository.findById(any()).getOrNull() } returns Journal(
+            "title",
+            "content",
+            member = mockk(),
+            goal = mockk()
+        )
 
         `when`("a member tries to read a journal entry") {
             then("the journal entry should be returned") {
