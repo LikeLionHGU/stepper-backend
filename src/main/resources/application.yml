@@ -24,6 +24,9 @@ spring:
   h2:
     console:
       enabled: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
 server:
   servlet:
     session:
@@ -48,3 +51,7 @@ custom:
       instructions:
       welcome-messages:
         - Message 1
+  aws:
+    access-key:
+    secret-access-key:
+    bucket-name:

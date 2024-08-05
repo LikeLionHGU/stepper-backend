@@ -17,6 +17,8 @@ security:
 tags:
   - name: auth
     description: 인증
+  - name: image
+    description: 이미지
   - name: goals
     description: 성장목표
   - name: journals
@@ -55,6 +57,36 @@ paths:
       responses:
         "200":
           description: OK
+
+  # image
+  /v1/images:
+    post:
+      tags:
+        - image
+      summary: 이미지 업로드
+      description: " "
+      operationId: uploadImage
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/S3Request'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  imageUrl:
+                    type: string
+                    description: 이미지 URL
+              examples:
+                S3ResponseExample:
+                  value:
+                    url: https://3-namsong-st.s3.ap-northeast-2.amazonaws.com/goals/b46f73d9-fa83-4331-b37d-996897280aa6.jpeg...
 
   # goals
   /v1/goals:
@@ -421,7 +453,7 @@ paths:
           description: 채팅방 ID
           required: true
           schema:
-            type: number
+            type: string
       responses:
         "201":
           description: Created
@@ -440,6 +472,14 @@ components:
       in: header
       name: X-CSRF-TOKEN
   schemas:
+    S3Request:
+      type: object
+      required:
+        - file
+      properties:
+        file:
+          type: string
+          format: binary
     GoalRequest:
       type: object
       required:
