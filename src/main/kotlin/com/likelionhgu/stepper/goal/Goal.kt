@@ -19,6 +19,10 @@ class Goal(
     @Column
     var title: String,
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    val member: Member? = null,
+
     @Column
     var startDate: LocalDate? = null,
 
@@ -28,18 +32,21 @@ class Goal(
     @Column(length = 512)
     var thumbnail: String? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    val member: Member
+    @Column
+    var status: GoalStatus = GoalStatus.OPEN
 ) : BaseTime() {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val goalId = 0L
+    val goalId: Long = 0L
 
     @Column
-    var status = GoalStatus.OPEN
+    var streak: Int = 0
 
-    @Column
-    var streak = 0
+    fun update(targetGoal: Goal) {
+        title = targetGoal.title
+        startDate = targetGoal.startDate
+        endDate = targetGoal.endDate
+        thumbnail = targetGoal.thumbnail
+        status = targetGoal.status
+    }
 }

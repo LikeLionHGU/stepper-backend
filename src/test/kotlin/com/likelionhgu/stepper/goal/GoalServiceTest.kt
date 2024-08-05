@@ -1,7 +1,9 @@
 package com.likelionhgu.stepper.goal
 
 import com.likelionhgu.stepper.goal.enums.GoalSortType
+import com.likelionhgu.stepper.goal.enums.GoalStatus
 import com.likelionhgu.stepper.goal.request.GoalRequest
+import com.likelionhgu.stepper.goal.request.GoalUpdateRequest
 import com.likelionhgu.stepper.member.Member
 import com.likelionhgu.stepper.member.MemberRepository
 import io.kotest.core.spec.style.BehaviorSpec
@@ -67,12 +69,25 @@ class GoalServiceTest(
         }
 
         `when`("the goals are retrieved with an order of descending") {
-
             then("the goals should be sorted by ascending") {
                 val goals = goalService.memberGoals(oauth2UserId, GoalSortType.DESC)
 
                 goals[0].goalId shouldBe goalId2
                 goals[1].goalId shouldBe goalId1
+            }
+        }
+
+        `when`("the goal is updated") {
+            then("the goal should be updated") {
+                val request = GoalUpdateRequest(
+                    title = goalTitle,
+                    status = GoalStatus.CLOSED
+                )
+                goalService.updateGoal(goalId1, request)
+
+                val goal = goalService.goalInfo(goalId1)
+                goal shouldNotBe null
+                goal.status shouldBe GoalStatus.CLOSED
             }
         }
     }

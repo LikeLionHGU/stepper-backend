@@ -4,6 +4,7 @@ import com.likelionhgu.stepper.exception.GoalNotFoundException
 import com.likelionhgu.stepper.exception.MemberNotFoundException
 import com.likelionhgu.stepper.goal.enums.GoalSortType
 import com.likelionhgu.stepper.goal.request.GoalRequest
+import com.likelionhgu.stepper.goal.request.GoalUpdateRequest
 import com.likelionhgu.stepper.member.MemberRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,15 +22,16 @@ class GoalService(
 
         val goal = Goal(
             goalRequest.title!!,
+            member,
             goalRequest.startDate,
             goalRequest.endDate,
-            goalRequest.thumbnail,
-            member
+            goalRequest.thumbnail
         ).let(goalRepository::save)
 
         return goal.goalId
     }
 
+    @Transactional(readOnly = true)
     fun memberGoals(oauth2UserId: String, sortType: GoalSortType): List<Goal> {
         val member = memberRepository.findByOauth2Id(oauth2UserId)
             ?: throw MemberNotFoundException("The member with the oauth2 sub \"$oauth2UserId\" does not exist")
@@ -44,8 +46,16 @@ class GoalService(
      * @return Goal The `Goal` entity corresponding to the provided ID.
      * @throws GoalNotFoundException if no goal is found with the provided ID.
      */
+    @Transactional(readOnly = true)
     fun goalInfo(goalId: Long): Goal {
         return goalRepository.findById(goalId).getOrNull()
             ?: throw GoalNotFoundException("The goal with the id \"$goalId\" does not exist")
+    }
+
+    fun updateGoal(goalId: Long, goalRequest: GoalUpdateRequest) {
+        val sourceGoal = goalRepository.findById(goalId).getOrNull()
+            ?: throw GoalNotFoundException("The goal with the id \"$goalId\" does not exist")
+
+        goalRequest.toEntity().also(sourceGoal::update)
     }
 }
