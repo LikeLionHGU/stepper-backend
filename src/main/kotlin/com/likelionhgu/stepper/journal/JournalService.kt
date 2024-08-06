@@ -29,7 +29,9 @@ class JournalService(
             member = member,
             goal = goal
         ).let(journalRepository::save)
+
         goal.updateStreak(journal.createdDate.toLocalDate())
+        goal.journals.add(journal)
 
         return journal.journalId
     }
@@ -64,6 +66,9 @@ class JournalService(
     }
 
     fun deleteJournal(journalId: Long) {
+        val journal = journalRepository.findById(journalId).getOrNull()
+            ?: throw JournalNotFoundException("Journal not found with ID: $journalId")
+        journal.goal?.journals?.remove(journal)
         journalRepository.deleteById(journalId)
     }
 }

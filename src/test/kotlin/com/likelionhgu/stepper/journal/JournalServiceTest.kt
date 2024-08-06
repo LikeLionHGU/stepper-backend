@@ -26,6 +26,7 @@ class JournalServiceTest : BehaviorSpec({
             goal = mockk()
         )
         every { goal.updateStreak(any<LocalDate>()) } returns Unit
+        every { goal.journals } returns mutableListOf()
         val request = JournalRequest("title", "content")
 
         `when`("the member writes the journal entry") {
