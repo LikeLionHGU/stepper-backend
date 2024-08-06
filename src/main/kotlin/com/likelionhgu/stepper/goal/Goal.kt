@@ -63,4 +63,11 @@ class Goal(
     private fun isConsecutive(entryDate: LocalDate): Boolean {
         return streak == 0 || lastEntryDate?.plusDays(1) == entryDate
     }
+
+    fun refreshStreak(): Goal {
+        if (lastEntryDate?.plusDays(1) != LocalDate.now()) {
+            streak = 0
+        }
+        return this
+    }
 }

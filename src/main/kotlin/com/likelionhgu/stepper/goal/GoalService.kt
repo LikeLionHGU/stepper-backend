@@ -31,12 +31,11 @@ class GoalService(
         return goal.goalId
     }
 
-    @Transactional(readOnly = true)
     fun memberGoals(oauth2UserId: String, sortType: GoalSortType): List<Goal> {
         val member = memberRepository.findByOauth2Id(oauth2UserId)
             ?: throw MemberNotFoundException("The member with the oauth2 sub \"$oauth2UserId\" does not exist")
 
-        return goalRepository.findAllByMember(member, sortType.toSort())
+        return goalRepository.findAllByMember(member, sortType.toSort()).map(Goal::refreshStreak)
     }
 
     /**
