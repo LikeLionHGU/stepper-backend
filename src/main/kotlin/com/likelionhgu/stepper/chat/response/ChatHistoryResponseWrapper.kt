@@ -14,7 +14,7 @@ data class ChatHistoryResponseWrapper(val messages: List<ChatHistoryResponse>) {
                     role = ChatRole.of(message.role),
                     content = message.content.first().text.value
                 )
-            }.reversed()
+            }
             return ChatHistoryResponseWrapper(messages)
         }
 

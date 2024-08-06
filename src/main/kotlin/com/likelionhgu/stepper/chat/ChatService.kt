@@ -58,6 +58,7 @@ class ChatService(
      */
     fun chatHistoryOf(chatId: String): MessageResponseWrapper {
         return assistantService.listMessagesOf(chatId).resolve()
+            ?.let(MessageResponseWrapper.Companion::reverseOf)
             ?: throw FailedThreadException("Failed to get chat history for thread $chatId")
     }
 

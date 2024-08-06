@@ -17,4 +17,10 @@ data class MessageResponseWrapper(val data: List<MessageResponse>) {
             )
         }
     }
+
+    companion object {
+        fun reverseOf(response: MessageResponseWrapper): MessageResponseWrapper {
+            return MessageResponseWrapper(response.data.reversed())
+        }
+    }
 }
