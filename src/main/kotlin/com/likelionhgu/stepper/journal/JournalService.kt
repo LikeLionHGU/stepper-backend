@@ -6,9 +6,11 @@ import com.likelionhgu.stepper.journal.enums.JournalSortType
 import com.likelionhgu.stepper.journal.request.JournalRequest
 import com.likelionhgu.stepper.member.Member
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrNull
 
 @Service
+@Transactional
 class JournalService(
     private val journalRepository: JournalRepository
 ) {
@@ -27,6 +29,7 @@ class JournalService(
             member = member,
             goal = goal
         ).let(journalRepository::save)
+        goal.updateStreak(journal.createdDate.toLocalDate())
 
         return journal.journalId
     }
