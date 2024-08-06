@@ -1,5 +1,6 @@
 package com.likelionhgu.stepper.journal
 
+import com.likelionhgu.stepper.goal.Goal
 import com.likelionhgu.stepper.journal.enums.JournalSortType
 import com.likelionhgu.stepper.journal.request.JournalRequest
 import io.kotest.core.spec.style.BehaviorSpec
@@ -9,11 +10,13 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.mockk.every
 import io.mockk.mockk
+import java.time.LocalDate
 import kotlin.jvm.optionals.getOrNull
 
 class JournalServiceTest : BehaviorSpec({
     val journalRepository = mockk<JournalRepository>()
     val journalService = JournalService(journalRepository)
+    val goal = mockk<Goal>()
 
     given("A member who has created a goal") {
         every { journalRepository.save(any<Journal>()) } returns Journal(
@@ -22,11 +25,12 @@ class JournalServiceTest : BehaviorSpec({
             member = mockk(),
             goal = mockk()
         )
+        every { goal.updateStreak(any<LocalDate>()) } returns Unit
         val request = JournalRequest("title", "content")
 
         `when`("the member writes the journal entry") {
             then("the journal entry should be saved") {
-                val journalId = journalService.writeJournal(mockk(), mockk(), request)
+                val journalId = journalService.writeJournal(mockk(), goal, request)
 
                 journalId shouldNotBe null
             }

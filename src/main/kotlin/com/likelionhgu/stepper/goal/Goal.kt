@@ -42,11 +42,32 @@ class Goal(
     @Column
     var streak: Int = 0
 
+    @Column
+    var lastEntryDate: LocalDate? = null
+
     fun update(targetGoal: Goal) {
         title = targetGoal.title
         startDate = targetGoal.startDate
         endDate = targetGoal.endDate
         thumbnail = targetGoal.thumbnail
         status = targetGoal.status
+    }
+
+    fun updateStreak(entryDate: LocalDate) {
+        if (isConsecutive(entryDate)) {
+            streak++
+        }
+        lastEntryDate = entryDate
+    }
+
+    private fun isConsecutive(entryDate: LocalDate): Boolean {
+        return streak == 0 || lastEntryDate?.plusDays(1) == entryDate
+    }
+
+    fun refreshStreak(): Goal {
+        if (lastEntryDate?.plusDays(1) != LocalDate.now()) {
+            streak = 0
+        }
+        return this
     }
 }
