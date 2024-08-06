@@ -18,6 +18,10 @@ data class MessageResponseWrapper(val data: List<MessageResponse>) {
         }
     }
 
+    fun removeLast(): MessageResponseWrapper {
+        return MessageResponseWrapper(data.dropLast(1))
+    }
+
     companion object {
         fun reverseOf(response: MessageResponseWrapper): MessageResponseWrapper {
             return MessageResponseWrapper(response.data.reversed())

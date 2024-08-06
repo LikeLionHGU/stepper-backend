@@ -124,7 +124,7 @@ class ChatService(
     }
 
     fun generateSummaryOf(chatId: String): ChatSummaryResponse {
-        val chatHistory = chatHistoryOf(chatId).toSimpleMessage()
+        val chatHistory = chatHistoryOf(chatId).removeLast().toSimpleMessage()
 
         with(openAiProperties.completion) {
             val requestBody = CompletionRequest.of(modelType.id, instructions, chatHistory)
