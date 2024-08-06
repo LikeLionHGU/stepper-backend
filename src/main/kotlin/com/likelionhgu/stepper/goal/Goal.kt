@@ -2,7 +2,9 @@ package com.likelionhgu.stepper.goal
 
 import com.likelionhgu.stepper.common.BaseTime
 import com.likelionhgu.stepper.goal.enums.GoalStatus
+import com.likelionhgu.stepper.journal.Journal
 import com.likelionhgu.stepper.member.Member
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -11,6 +13,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
 import java.time.LocalDate
 
 @Entity
@@ -44,6 +47,9 @@ class Goal(
 
     @Column
     var lastEntryDate: LocalDate? = null
+
+    @OneToMany(mappedBy = "goal", cascade = [CascadeType.REMOVE])
+    val journals: MutableList<Journal> = mutableListOf()
 
     fun update(targetGoal: Goal) {
         title = targetGoal.title
