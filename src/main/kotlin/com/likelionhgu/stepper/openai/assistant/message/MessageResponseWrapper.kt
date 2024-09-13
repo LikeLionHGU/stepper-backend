@@ -1,5 +1,6 @@
 package com.likelionhgu.stepper.openai.assistant.message
 
+import com.likelionhgu.stepper.chat.ChatRole
 import com.likelionhgu.stepper.openai.SimpleMessage
 
 data class MessageResponseWrapper(val data: List<MessageResponse>) {
@@ -19,7 +20,10 @@ data class MessageResponseWrapper(val data: List<MessageResponse>) {
     }
 
     fun removeLast(): MessageResponseWrapper {
-        return MessageResponseWrapper(data.dropLast(1))
+        if (data.last().role == ChatRole.CHATBOT.alias) {
+            return MessageResponseWrapper(data.dropLast(1))
+        }
+        return this
     }
 
     companion object {
