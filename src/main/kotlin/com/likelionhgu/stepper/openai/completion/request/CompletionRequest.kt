@@ -8,14 +8,14 @@ data class CompletionRequest(
 ) {
     companion object {
         fun of(model: String, instructions: String, chatHistory: List<SimpleMessage>): CompletionRequest {
-            val systemMessage = SimpleMessage(
-                role = SYSTEM_ROLE,
+            val instructionMessage = SimpleMessage(
+                role = USER_ROLE,
                 content = instructions
             )
-            val messages = listOf(systemMessage).plus(chatHistory)
+            val messages = chatHistory.plus(instructionMessage)
             return CompletionRequest(model, messages)
         }
 
-        private const val SYSTEM_ROLE = "system"
+        private const val USER_ROLE = "user"
     }
 }
